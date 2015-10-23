@@ -1,0 +1,30 @@
+"""Global configuration"""
+
+cfg = {
+    # subreddit to set flairs, without /r/ prefix
+    "subreddit": "__REPLACE_ME__",
+    # list of ignored users
+    "blacklist": [],
+    # wiki page with list of valid flairs
+    "wiki_page": "flairs",
+    # pm subject must be this to trigger change
+    "subject": "flair",
+    # log file location
+    "log_file": "flairbot.log",
+    # bot version
+    "version": "1.0",
+    # don't put "bot" anywhere in this
+    "user_agent": "Flair changer %s for /r/%s",
+    # message subject
+    "msg_subject": "flair change request",
+    # message to user on successful change
+    "msg_success": "your flair has been changed to %s",
+    # message to user on failed change
+    "msg_failure": "the flair %s doesn't exist. see the list [here](%s)",
+    # regex for each flair line
+    "wiki_format": "\\* \[(\\w+)\]",
+    # only mark processed pms as read (useful if account is shared)
+    "limit_read": False,
+    # log debugging messages
+    "debug": True
+}
