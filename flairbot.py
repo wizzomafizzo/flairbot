@@ -4,6 +4,8 @@
 
 import sys
 import re
+import os
+import time
 import logging
 import logging.handlers
 
@@ -134,6 +136,37 @@ class FlairBot:
         if cfg["limit_read"]:
             msg.mark_as_read()
 
+    def get_wiki_page(self, subreddit):
+        logging.info("Fetching wiki page...")
+        if not os.path.exists(cfg["cache_file"]):
+            logging.warning("No cache file found")
+            modified = 0
+        else:
+            stat = os.stat(cfg["cache_file"])
+            modified = int(stat.st_mtime)
+
+        now = int(time.time())
+
+        if modified > 0 and now - modified < cfg["cache_time"]:
+            cache = open(cfg["cache_file"], "r")
+            logging.debug("Using valid cache")
+            wiki_page = cache.read()
+            cache.close()
+            return wiki_page
+
+        try:
+            logging.debug("Updating cache")
+            wiki_page = subreddit.get_wiki_page(cfg["wiki_page"]).content_md
+        except (praw.errors.NotFound):
+            logging.error("Wiki page %s doesn't exist", cfg["wiki_page"])
+            return
+
+        cache = open(cfg["cache_file"], "w")
+        logging.debug("Writing cache")
+        cache.write(wiki_page)
+        cache.close()
+        return wiki_page
+
     def run(self):
         """Process all new flair requests"""
         try:
@@ -143,12 +176,10 @@ class FlairBot:
             return
 
         subreddit = self.r.get_subreddit(cfg["subreddit"])
-
-        try:
-            wiki_page = subreddit.get_wiki_page(cfg["wiki_page"]).content_md
-        except (praw.errors.NotFound):
-            logging.error("Wiki page %s doesn't exist", cfg["wiki_page"])
+        wiki_page = self.get_wiki_page(subreddit)
+        if wiki_page is None:
             return
+
         self.flairs = parse_wiki_flairs(wiki_page)
         logging.debug(self.flairs)
 

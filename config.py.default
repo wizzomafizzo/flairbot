@@ -11,6 +11,10 @@ cfg = {
     "subject": "flair",
     # log file location
     "log_file": "flairbot.log",
+	# location of local wiki page
+    "cache_file": "flair_cache.md",
+    # time in seconds until cache refreshed
+    "cache_time": 60 * 60 * 24, # 1d
     # bot version
     "version": "1.0",
     # don't put "bot" anywhere in this
